@@ -1,17 +1,6 @@
 require 'database_cleaner'
 
-# configure shoulda matchers to use rspec as the test framework and full matcher libraries for rails
-Shoulda::Matchers.configure do |config|
-  config.integrate do |with|
-    with.test_framework :rspec
-    with.library :rails
-  end
-end
-
 RSpec.configure do |config|
-
-  # add `FactoryBot` methods
-  config.include FactoryBot::Syntax::Methods
 
   # start by truncating all the tables but then use the faster transaction strategy the rest of the time.
   config.before(:suite) do
@@ -39,9 +28,6 @@ RSpec.configure do |config|
     # ...rather than:
     #     # => "be bigger than 2"
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
-
-    # always craetes new transaction when start test
-    config.use_transactional_fixtures = true
   end
 
   # rspec-mocks config goes here. You can use an alternate test double
@@ -109,4 +95,5 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
+
 end
