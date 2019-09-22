@@ -1,6 +1,13 @@
+require 'categorable'
+
 class Api::V1::CategoriesController < ApplicationController
-  def index      
-    @categories = Category.all
-    render json: @categories
+  include Categorable
+
+  def index
+    render json: CategorySerializer.new(@categories)
+  end
+
+  def show
+    render json: CategorySerializer.new(@category)
   end
 end
