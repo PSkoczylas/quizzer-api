@@ -3,22 +3,31 @@ module Categorable
 
   included do
     before_action :set_category, only: [:show, :edit, :destroy, :update]
-    before_action :get_categories, only: [:index]
+    before_action :set_categories, only: [:index]
     before_action :create_category, only: [:create]
+    before_action :update_category, only: [:update]
+    before_action :destroy_category, only: [:destroy]
   end
 
-  def get_categories
+  def set_categories
     @categories = repo.all
   end
 
   def set_category
-    @category = repo.find_by(id: params[:id])
+    @category = repo.find(params[:id])
   end
 
   def create_category
-    @category = repo.new(category_params)
+    @category = repo.create!(category_params)
   end
 
+  def update_category
+    @category.update(category_params)
+  end
+
+  def destroy_category
+    @category.destroy
+  end
   private
 
   def category_params
