@@ -7,21 +7,25 @@ module Categorable
     before_action :create_category, only: [:create]
   end
 
-  private
-
   def get_categories
-    @categories = Category.all
+    @categories = repo.all
   end
 
   def set_category
-    @category = Category.find(params[:id])
+    @category = repo.find_by(id: params[:id])
   end
 
   def create_category
-    @category = Category.new(category_params)
+    @category = repo.new(category_params)
   end
+
+  private
 
   def category_params
     params.require(:category).permit(:name, :description)
+  end
+
+  def repo
+    CategoryRepository.new
   end
 end
