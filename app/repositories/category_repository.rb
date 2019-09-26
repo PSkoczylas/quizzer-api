@@ -4,6 +4,6 @@ class CategoryRepository < ApplicationRepository
   end
 
   # place for other methods
-  class << self
-  end
+  # class << self
+  # end
 end

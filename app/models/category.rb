@@ -1,3 +1,4 @@
 class Category < ApplicationRecord
-  validates_presence_of :name
+  validates :name, presence: true,
+                   length: { maximum: 30 }
 end
