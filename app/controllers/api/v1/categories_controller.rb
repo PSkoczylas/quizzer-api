@@ -5,25 +5,26 @@ class Api::V1::CategoriesController < ApplicationController
 
   # GET /api/v1/categories
   def index
-    render json: CategorySerializer.new(@categories)
+    render json: serialize(@categories)
   end
 
   # GET /api/v1/categories/:id
   def show
-    render json: CategorySerializer.new(@category)
+    render json: serialize(@category)
   end
 
   # POST /api/v1/categories
   def create
-    render json: @category, status: :created, location: api_v1_category_url(@category)
+    render json: serialize(@category),
+      status: :created, location: api_v1_category_url(@category)
   end
 
-  # PUT /todos/:id
+  # PUT /categories/:id
   def update
-    render json: @category
+    render json: serialize(@category)
   end
 
-  # DELETE /todos/:id
+  # DELETE /categories/:id
   def destroy
     head :no_content
   end

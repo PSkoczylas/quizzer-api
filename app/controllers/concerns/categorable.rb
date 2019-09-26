@@ -9,16 +9,21 @@ module Categorable
     before_action :destroy_category, only: [:destroy]
   end
 
+  def initialize
+    @repo = CategoryRepository.new
+    @serializer = CategorySerializer
+  end
+
   def set_categories
-    @categories = repo.all
+    @categories = @repo.all
   end
 
   def set_category
-    @category = repo.find(params[:id])
+    @category = @repo.find(params[:id])
   end
 
   def create_category
-    @category = repo.create!(category_params)
+    @category = @repo.create!(category_params)
   end
 
   def update_category
@@ -28,13 +33,10 @@ module Categorable
   def destroy_category
     @category.destroy
   end
+
   private
 
   def category_params
     params.require(:category).permit(:name, :description)
-  end
-
-  def repo
-    CategoryRepository.new
   end
 end
