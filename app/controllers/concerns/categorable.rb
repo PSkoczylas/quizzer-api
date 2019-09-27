@@ -1,36 +1,31 @@
 module Categorable
   extend ActiveSupport::Concern
 
-  included do
-    before_action :set_category, only: [:show, :edit, :destroy, :update]
-    before_action :set_categories, only: [:index]
-    before_action :create_category, only: [:create]
-    before_action :update_category, only: [:update]
-    before_action :destroy_category, only: [:destroy]
-  end
-
   def initialize
     @repo = CategoryRepository.new
     @serializer = CategorySerializer
   end
 
-  def set_categories
-    @categories = @repo.all
+  def get_all_categories
+    @repo.all
   end
 
-  def set_category
-    @category = @repo.find(params[:id])
+  def get_category(id)
+    @repo.find(id)
   end
 
   def create_category
-    @category = @repo.create!(category_params)
+    @repo.create!(category_params)
   end
 
-  def update_category
+  def update_category(id)
+    @category = get_category(id)
     @category.update(category_params)
+    @category
   end
 
-  def destroy_category
+  def destroy_category(id)
+    @category = get_category(id)
     @category.destroy
   end
 

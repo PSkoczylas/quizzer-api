@@ -3,9 +3,13 @@ require 'rails_helper'
 RSpec.describe Api::V1::CategoriesController, type: :controller do
 
   describe 'GET #index' do
-      let!(:categories) { create_list(:category, 100) }
+      let!(:categories) { create_list(:category, 30) }
 
-      before { get :index, format: :json }
+      before do
+        allow_any_instance_of(Api::V1::CategoriesController)
+          .to receive(:get_all_categories).and_return(categories)
+        get :index, format: :json
+      end
 
       it 'responds successfully with an HTTP 200 status code' do
         expect(response).to be_successful
@@ -13,7 +17,7 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
       end
 
       it 'loads all of the categories into @categories' do
-        expect(JSON.parse(response.body)["data"].size).to eq(Category.all.size)
+        expect(JSON.parse(response.body)["data"].size).to eq(categories.size)
       end
 
       it 'loads only serialized fields' do
@@ -26,7 +30,12 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
   describe 'GET #show' do
     context 'when category exists' do
       let!(:category) { create(:category) }
-      before { get :show, params: { id: category.id }, format: :json }
+
+      before do
+        allow_any_instance_of(Api::V1::CategoriesController)
+          .to receive(:get_category).and_return(category)
+        get :show, params: { id: category.id }, format: :json
+      end
 
       it 'responds successfully with an HTTP 200 status code' do
         expect(response).to be_successful
@@ -41,7 +50,11 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
     end
 
     context 'when category does not exist' do
-      before { get :show, params: { id: 0 }, format: :json }
+      before do
+        allow_any_instance_of(Api::V1::CategoriesController).to receive(:get_category)
+          .and_raise(ActiveRecord::RecordNotFound.new, "Couldn't find Category")
+        get :show, params: { id: 0 }, format: :json
+      end
 
       it 'returns status code 404' do
         expect(response).to have_http_status(:not_found)
@@ -57,26 +70,36 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
     context 'when request attributes are valid' do
       let(:params) { attributes_for(:category) }
 
-      it 'responds successfully with an HTTP 200 status code' do
+      before do
+        allow_any_instance_of(Api::V1::CategoriesController)
+          .to receive(:create_category)
+          .and_return(Category.create(params))
         request.accept = 'application/json'
         post :create, params: { category: params }
+      end
+
+      it 'responds successfully with an HTTP 200 status code' do
         expect(response).to be_successful
         expect(response).to have_http_status(:created)
       end
 
       it 'responds with created category' do
-        request.accept = 'application/json'
-        post :create, params: { category: params }
         expect(response.body).to include(params[:name])
       end
     end
 
     context 'when request attributes are invalid' do
       let(:error_params) { { description: 'Description without name' } }
-      before { post :create, params: { category: error_params } }
+
+      before do
+        allow_any_instance_of(Api::V1::CategoriesController)
+        .to receive(:create_category)
+        .and_raise(ActiveRecord::RecordInvalid.new, "Validation failed: Name can't be blank")
+        request.accept = 'application/json'
+        post :create, params: { category: error_params }
+      end
 
       it 'responds with error for empty name' do
-        request.accept = 'application/json'
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
@@ -92,7 +115,12 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
     context 'when categories exists' do
       let!(:category) { create(:category) }
 
-      before { put :update, params: { id: category.id, category: params } }
+      before do
+        allow_any_instance_of(Api::V1::CategoriesController)
+          .to receive(:update_category)
+          .and_return(Category.update(params))
+        put :update, params: { id: category.id, category: params }
+      end
 
       it 'responds successfully with an HTTP 204 status code' do
         expect(response).to be_successful
@@ -105,7 +133,11 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
     end
 
     context 'when category does not exist' do
-      before { put :update, params: { id: 0, category: params } }
+      before do
+        allow_any_instance_of(Api::V1::CategoriesController).to receive(:update_category)
+          .and_raise(ActiveRecord::RecordNotFound.new, "Couldn't find Category")
+        put :update, params: { id: 0, category: params }
+      end
 
       it 'returns status code 404' do
         expect(response).to have_http_status(404)
@@ -120,7 +152,12 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
     describe 'DELETE /todos/:id' do
       let!(:category) { create(:category) }
 
-      before { delete :destroy, params: { id: category.id } }
+      before do
+        allow_any_instance_of(Api::V1::CategoriesController)
+        .to receive(:destroy_category)
+        .and_return(category.destroy)
+        delete :destroy, params: { id: category.id }
+      end
 
       it 'returns status code 204' do
         expect(response).to have_http_status(204)
