@@ -31,6 +31,7 @@ group :test do
   gem 'faker', :git => 'https://github.com/faker-ruby/faker.git', :branch => 'master'
   gem 'database_cleaner'
   gem 'shoulda-matchers'
+  gem 'airborne'
 end
 
 group :development do
