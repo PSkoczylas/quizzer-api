@@ -17,6 +17,8 @@ RSpec.configure do |config|
     FactoryBot.reload
   end
 
+  Dir["./spec/support/**/*.rb"].sort.each {|f| require f}
+
   config.expect_with :rspec do |expectations|
     expectations.syntax = [:should, :expect]
 

@@ -1,4 +1,4 @@
-module Categorable
+module CategoriesConcern
   extend ActiveSupport::Concern
 
   def initialize

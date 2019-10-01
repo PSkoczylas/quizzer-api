@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::CategoriesController, type: :controller do
 
   describe 'GET #index' do
-      let!(:categories) { create_list(:category, 30) }
+      let!(:categories) { create_list(:category, 20) }
 
       before do
         allow_any_instance_of(Api::V1::CategoriesController)

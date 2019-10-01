@@ -1,7 +1,5 @@
-require 'categorable'
-
 class Api::V1::CategoriesController < ApplicationController
-  include Categorable
+  include CategoriesConcern
 
   # GET /api/v1/categories
   def index
